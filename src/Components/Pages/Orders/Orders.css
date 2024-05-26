@@ -1,0 +1,22 @@
+.order_container_order{
+    background-color: #efeeee;
+    padding: 30px;
+}
+.order_container_sub{
+    background-color: #fff;
+    padding: 20px;
+}
+.order_container_sub h2{
+    border-bottom: 2px solid goldenrod;
+    padding: 20px;
+}
+.order_container_sub p{
+   padding: 12px;
+}
+.order_container_sub img{
+    width: 100px !important;
+    
+}
+.order_container_sub div{
+    height: auto !important;
+}
