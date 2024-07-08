@@ -6,16 +6,20 @@ import { StateProvider } from './Components/StateProvider/StateProvider';
 import { initialState} from './Components/Utility/reducer';
 import reducer from './Components/Utility/reducer';
 import { BrowserRouter } from 'react-router-dom'
+import { store } from '../src/features/Store'
+import { Provider } from 'react-redux'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   
   <React.StrictMode>
+     <Provider store={store}>
     <StateProvider initialState={initialState} reducer={reducer}>
     
     <App />
     
   
     </StateProvider>
+    </Provider>
   </React.StrictMode>
 );
 

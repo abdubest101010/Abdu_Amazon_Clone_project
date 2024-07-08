@@ -7,22 +7,20 @@ import ProductCard from "../../Products/ProductCard";
 import CurrencyFormat from "../../CurrencyFormat/CurrencyFormat";
 import { Link } from "react-router-dom";
 import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
+import { addToCart, removeCart } from "../../../features/CartSlice";
+import { useDispatch,useSelector } from "react-redux";
 function Cart() {
-  const [{ basket }, dispatch] = useContext(DataContext);
+  const dispatch = useDispatch()
+  const basket = useSelector((state) => state.cart.cart)
   const total= basket.reduce((amount, item)=>{
     return item.price*item.amount + amount
   },0)
   const increment = (item) => {
-    dispatch({
-      type: "ADD_TO_BASKET",
-      item,
-    });
+    // const item = { image, title, id, rating, price, description };
+    dispatch(addToCart({item}));
   };
   const decrement = (id) => {
-    dispatch({
-      type: "REMOVE_FROM_BASKET",
-      id
-    });
+    dispatch(removeCart(id));
   };
   return (
     <LayOut>

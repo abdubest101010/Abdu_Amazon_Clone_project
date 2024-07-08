@@ -9,23 +9,34 @@ import { axiosInstance } from "../../api/axios";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../Utility/firebase";
+import { useSelector } from "react-redux";
+
 function Payment() {
   const navigate = useNavigate();
   const stripe = useStripe();
   const [cardError, setCardError] = useState(null);
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
-  const [{ basket, user }, dispatch] = useContext(DataContext);
+  const [{  user }, dispatch] = useContext(DataContext);
+  const basket = useSelector((state) => state.cart.cart)
+
   const totalItem = basket?.reduce((amount, item) => {
     return item.amount + amount;
   }, 0);
+
   const handleChange = (e) => {
-    console.log(e);
-    e?.error?.message ? setCardError(e?.error?.message) : "";
+    if (e?.error?.message) {
+      setCardError(e.error.message);
+    } else {
+      setCardError(null);
+    }
   };
-  const total = basket.reduce((amount, item) => {
-    return item.price * item.amount + amount;
-  }, 0);
+
+ 
+  const total= basket.reduce((amount, item)=>{
+    return item.price*item.amount + amount
+  },0)
+
   const handlePayment = async (e) => {
     setProcessing(true);
     e.preventDefault();
@@ -34,14 +45,12 @@ function Payment() {
         method: "POST",
         url: `/payment/create?total=${total * 100}`,
       });
-      //  console.log(response.data)
       const clientSecret = response.data?.client_secret;
       const { paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
         },
       });
-      // console.log(paymentIntent);
 
       await db
         .collection("users")
@@ -53,29 +62,31 @@ function Payment() {
           amount: paymentIntent.amount,
           created: paymentIntent.created,
         });
-        dispatch({
-          type: "EMPTY_BASKET"
-        }) 
+
+      dispatch({
+        type: "EMPTY_BASKET",
+      });
 
       setProcessing(false);
       navigate("/orders", { state: { msg: "you have placed orders" } });
-    } catch (error) {}
+    } catch (error) {
+      console.error("Payment error:", error);
+      setProcessing(false);
+    }
   };
+
   return (
     <LayOut>
       <div className="payment_header"> CheckOut ({totalItem}) items</div>
       <section className="payment">
         <div className="flex">
           <h1>Delivery Address</h1>
-
           <div>
             {user?.email}
-
             <div>123 React Lane</div>
             <div>Chicago</div>
           </div>
         </div>
-
         <hr />
         <div className="flex">
           <h3>Review Items and delivery</h3>
@@ -90,7 +101,7 @@ function Payment() {
           <h3>Payment Methods</h3>
           <div className="payment_card_container">
             <div className="payment_details">
-              <form on onSubmit={handlePayment} action="">
+              <form onSubmit={handlePayment} action="">
                 {cardError && (
                   <small style={{ color: "red" }}>{cardError}</small>
                 )}

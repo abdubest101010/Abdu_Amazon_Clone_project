@@ -7,11 +7,12 @@ import LowerContainer from "../lowerContainer/LowerContainer";
 import { Link } from "react-router-dom";
 import { DataContext } from "../StateProvider/StateProvider";
 import { auth } from "../Utility/firebase";
+import { useSelector } from "react-redux";
 function Header() {
-  const [{basket, user},dispatch]=useContext(DataContext)
-  const totalItem = basket?.reduce((amount, item) => {
-    return item.amount + amount;
-  }, 0);
+  const [{ user},dispatch]=useContext(DataContext)
+  const basket = useSelector((state) => state.cart.cart)
+  const amounts = useSelector((state) => state.cart.amount);
+  const totalItem = basket.reduce((total, item) => total + item.amount, 0);
   return (
     <section className="fixed">
       <section>
